@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/ingredienteController.php';
+require_once __DIR__ . '/../controllers/pastelController.php';
 
 $database = new Database();
 $connection = $database->connect();
@@ -39,6 +40,11 @@ if (preg_match('#^/ingredientes/(\d+)$#', $uri, $matches) && $method === 'PUT') 
 if (preg_match('#^/ingredientes/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
     $controller = new IngredienteController($connection);
     $controller->destroy((int) $matches[1]);
+}
+
+if ($uri === '/pasteles' && $method === 'GET') {
+    $controller = new PastelController($connection);
+    $controller->index();
 }
 
 jsonResponse(404, [
