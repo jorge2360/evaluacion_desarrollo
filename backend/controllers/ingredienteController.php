@@ -172,4 +172,35 @@ class IngredienteController
             ]);
         }
     }
+
+    public function destroy(int $id): void
+    {
+        try {
+            $checkSql = "SELECT id_ingrediente FROM ingrediente WHERE id_ingrediente = :id LIMIT 1";
+            $checkStmt = $this->connection->prepare($checkSql);
+            $checkStmt->execute([':id' => $id]);
+            $ingrediente = $checkStmt->fetch();
+
+            if (!$ingrediente) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'Ingrediente no encontrado.'
+                ]);
+            }
+
+            $sql = "DELETE FROM ingrediente WHERE id_ingrediente = :id";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            jsonResponse(200, [
+                'success' => true,
+                'message' => 'Ingrediente eliminado correctamente.'
+            ]);
+        } catch (PDOException $e) {
+            jsonResponse(500, [
+                'success' => false,
+                'message' => 'Error al eliminar el ingrediente.'
+            ]);
+        }
+    }
 }

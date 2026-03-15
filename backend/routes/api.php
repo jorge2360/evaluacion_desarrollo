@@ -36,6 +36,11 @@ if (preg_match('#^/ingredientes/(\d+)$#', $uri, $matches) && $method === 'PUT') 
     $controller->update((int) $matches[1]);
 }
 
+if (preg_match('#^/ingredientes/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+    $controller = new IngredienteController($connection);
+    $controller->destroy((int) $matches[1]);
+}
+
 jsonResponse(404, [
     'success' => false,
     'message' => 'Ruta no encontrada.'
