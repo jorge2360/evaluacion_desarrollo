@@ -62,6 +62,11 @@ if (preg_match('#^/pasteles/(\d+)$#', $uri, $matches) && $method === 'PUT') {
     $controller->update((int) $matches[1]);
 }
 
+if (preg_match('#^/pasteles/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+    $controller = new PastelController($connection);
+    $controller->destroy((int) $matches[1]);
+}
+
 jsonResponse(404, [
     'success' => false,
     'message' => 'Ruta no encontrada.'

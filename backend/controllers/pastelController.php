@@ -182,4 +182,35 @@ class PastelController
             ]);
         }
     }
+
+    public function destroy(int $id): void
+    {
+        try {
+            $checkSql = "SELECT id_pastel FROM pastel WHERE id_pastel = :id";
+            $checkStmt = $this->connection->prepare($checkSql);
+            $checkStmt->execute([':id' => $id]);
+            $pastel = $checkStmt->fetch();
+
+            if (!$pastel) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'Pastel no encontrado.'
+                ]);
+            }
+
+            $sql = "DELETE FROM pastel WHERE id_pastel = :id";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            jsonResponse(200, [
+                'success' => true,
+                'message' => 'Pastel eliminado correctamente.'
+            ]);
+        } catch (PDOException $e) {
+            jsonResponse(500, [
+                'success' => false,
+                'message' => 'Error al eliminar el pastel.'
+            ]);
+        }
+    }
 }
