@@ -4,6 +4,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../controllers/ingredienteController.php';
 require_once __DIR__ . '/../controllers/pastelController.php';
 require_once __DIR__ . '/../controllers/pastelIngredienteController.php';
+require_once __DIR__ . '/../controllers/reporteController.php';
 
 $database = new Database();
 $connection = $database->connect();
@@ -76,6 +77,16 @@ if (preg_match('#^/pasteles/(\d+)/ingredientes$#', $uri, $matches) && $method ==
 if (preg_match('#^/pasteles/(\d+)/ingredientes$#', $uri, $matches) && $method === 'GET') {
     $controller = new PastelIngredienteController($connection);
     $controller->indexByPastel((int) $matches[1]);
+}
+
+if (preg_match('#^/pasteles/(\d+)/ingredientes/(\d+)$#', $uri, $matches) && $method === 'DELETE') {
+    $controller = new PastelIngredienteController($connection);
+    $controller->destroy((int) $matches[1], (int) $matches[2]);
+}
+
+if ($uri === '/reporte/pasteles-ingredientes' && $method === 'GET') {
+    $controller = new ReporteController($connection);
+    $controller->pastelesConIngredientes();
 }
 
 jsonResponse(404, [

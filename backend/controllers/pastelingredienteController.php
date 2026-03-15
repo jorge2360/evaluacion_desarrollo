@@ -135,4 +135,50 @@ class PastelIngredienteController
             ]);
         }
     }
+
+    public function destroy(int $idPastel, int $idIngrediente): void
+    {
+        try {
+            $sql = "SELECT id_pastel_ingrediente
+                    FROM pastel_ingrediente
+                    WHERE id_pastel = :id_pastel
+                    AND id_ingrediente = :id_ingrediente
+                    LIMIT 1";
+
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([
+                ':id_pastel' => $idPastel,
+                ':id_ingrediente' => $idIngrediente
+            ]);
+
+            $relation = $stmt->fetch();
+
+            if (!$relation) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'La relación entre pastel e ingrediente no existe.'
+                ]);
+            }
+
+            $deleteSql = "DELETE FROM pastel_ingrediente
+                        WHERE id_pastel = :id_pastel
+                            AND id_ingrediente = :id_ingrediente";
+
+            $deleteStmt = $this->connection->prepare($deleteSql);
+            $deleteStmt->execute([
+                ':id_pastel' => $idPastel,
+                ':id_ingrediente' => $idIngrediente
+            ]);
+
+            jsonResponse(200, [
+                'success' => true,
+                'message' => 'Ingrediente desasociado del pastel correctamente.'
+            ]);
+        } catch (PDOException $e) {
+            jsonResponse(500, [
+                'success' => false,
+                'message' => 'Error al desasociar el ingrediente del pastel.'
+            ]);
+        }
+    }
 }
