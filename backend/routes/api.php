@@ -52,6 +52,11 @@ if ($uri === '/pasteles' && $method === 'POST') {
     $controller->store();
 }
 
+if (preg_match('#^/pasteles/(\d+)$#', $uri, $matches) && $method === 'GET') {
+    $controller = new PastelController($connection);
+    $controller->show((int) $matches[1]);
+}
+
 jsonResponse(404, [
     'success' => false,
     'message' => 'Ruta no encontrada.'

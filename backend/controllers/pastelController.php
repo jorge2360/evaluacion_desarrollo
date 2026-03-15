@@ -83,4 +83,31 @@ class PastelController
             ]);
         }
     }
+
+    public function show(int $id): void
+    {
+        try {
+            $sql = "SELECT * FROM pastel WHERE id_pastel = :id";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([':id' => $id]);
+            $pastel = $stmt->fetch();
+
+            if (!$pastel) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'Pastel no encontrado.'
+                ]);
+            }
+
+            jsonResponse(200, [
+                'success' => true,
+                'data' => $pastel
+            ]);
+        } catch (PDOException $e) {
+            jsonResponse(500, [
+                'success' => false,
+                'message' => 'Error al obtener el pastel.'
+            ]);
+        }
+    }
 }
