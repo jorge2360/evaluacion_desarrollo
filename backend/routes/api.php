@@ -47,6 +47,11 @@ if ($uri === '/pasteles' && $method === 'GET') {
     $controller->index();
 }
 
+if ($uri === '/pasteles' && $method === 'POST') {
+    $controller = new PastelController($connection);
+    $controller->store();
+}
+
 jsonResponse(404, [
     'success' => false,
     'message' => 'Ruta no encontrada.'
