@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/database.php';
+
 $database = new Database();
 $connection = $database->connect();
 
@@ -11,6 +13,12 @@ if ($uri === '/' || $uri === '') {
         'success' => true,
         'message' => 'API de examen pasteles funcionando correctamente.'
     ]);
+}
+
+if ($uri === '/ingredientes' && $method === 'GET') {
+    require_once __DIR__ . '/../controllers/ingredienteController.php';
+    $controller = new IngredienteController($connection);
+    $controller->index();
 }
 
 jsonResponse(404, [
