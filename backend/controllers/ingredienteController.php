@@ -80,4 +80,32 @@ class IngredienteController
             ]);
         }
     }
+    
+    public function show(int $id): void
+    {
+        try {
+            $sql = "SELECT * FROM ingrediente WHERE id_ingrediente = :id LIMIT 1";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([':id' => $id]);
+
+            $ingrediente = $stmt->fetch();
+
+            if (!$ingrediente) {
+                jsonResponse(404, [
+                    'success' => false,
+                    'message' => 'Ingrediente no encontrado.'
+                ]);
+            }
+
+            jsonResponse(200, [
+                'success' => true,
+                'data' => $ingrediente
+            ]);
+        } catch (PDOException $e) {
+            jsonResponse(500, [
+                'success' => false,
+                'message' => 'Error al obtener el ingrediente.'
+            ]);
+        }
+    }
 }
