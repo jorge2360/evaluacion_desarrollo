@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../controllers/ingredienteController.php';
 
 $database = new Database();
 $connection = $database->connect();
@@ -16,9 +17,13 @@ if ($uri === '/' || $uri === '') {
 }
 
 if ($uri === '/ingredientes' && $method === 'GET') {
-    require_once __DIR__ . '/../controllers/ingredienteController.php';
     $controller = new IngredienteController($connection);
     $controller->index();
+}
+
+if ($uri === '/ingredientes' && $method === 'POST') {
+    $controller = new IngredienteController($connection);
+    $controller->store();
 }
 
 jsonResponse(404, [

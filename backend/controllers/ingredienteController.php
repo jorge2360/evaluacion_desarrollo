@@ -29,4 +29,55 @@ class IngredienteController
             ]);
         }
     }
+
+    public function store(): void
+    {
+        try {
+            $input = json_decode(file_get_contents('php://input'), true);
+
+            if (!$input) {
+                jsonResponse(400, [
+                    'success' => false,
+                    'message' => 'No se recibieron datos válidos.'
+                ]);
+            }
+
+            $nombre = trim($input['nombre'] ?? '');
+            $descripcion = trim($input['descripcion'] ?? '');
+            $fecha_ingreso = trim($input['fecha_ingreso'] ?? '');
+            $fecha_vencimiento = trim($input['fecha_vencimiento'] ?? '');
+
+            if (
+                $nombre === '' ||
+                $fecha_ingreso === '' ||
+                $fecha_vencimiento === ''
+            ) {
+                jsonResponse(422, [
+                    'success' => false,
+                    'message' => 'Los campos nombre, fecha_ingreso y fecha_vencimiento son obligatorios.'
+                ]);
+            }
+
+            $sql = "INSERT INTO ingrediente (nombre, descripcion, fecha_ingreso, fecha_vencimiento)
+                    VALUES (:nombre, :descripcion, :fecha_ingreso, :fecha_vencimiento)";
+
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute([
+                ':nombre' => $nombre,
+                ':descripcion' => $descripcion,
+                ':fecha_ingreso' => $fecha_ingreso,
+                ':fecha_vencimiento' => $fecha_vencimiento
+            ]);
+
+            jsonResponse(201, [
+                'success' => true,
+                'message' => 'Ingrediente creado correctamente.'
+            ]);
+        } catch (PDOException $e) {
+            jsonResponse(500, [
+                'success' => false,
+                'message' => 'Error al crear el ingrediente.'
+            ]);
+        }
+    }
 }
