@@ -7,6 +7,7 @@ const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
 const successMessage = ref('')
+const editingId = ref(null)
 
 const form = ref({
   nombre: '',
@@ -22,6 +23,7 @@ const resetForm = () => {
     fecha_ingreso: '',
     fecha_vencimiento: '',
   }
+  editingId.value = null
 }
 
 const cargarIngredientes = async () => {
@@ -54,20 +56,61 @@ const guardarIngrediente = async () => {
   try {
     saving.value = true
 
-    await ingredienteApi.create({
+    const payload = {
       nombre: form.value.nombre,
       descripcion: form.value.descripcion,
       fecha_ingreso: form.value.fecha_ingreso,
       fecha_vencimiento: form.value.fecha_vencimiento,
-    })
+    }
 
-    successMessage.value = 'Ingrediente creado correctamente.'
+    if (editingId.value) {
+      await ingredienteApi.update(editingId.value, payload)
+      successMessage.value = 'Ingrediente actualizado correctamente.'
+    } else {
+      await ingredienteApi.create(payload)
+      successMessage.value = 'Ingrediente creado correctamente.'
+    }
+
     resetForm()
     await cargarIngredientes()
   } catch (err) {
-    error.value = err.message || 'Error al crear ingrediente'
+    error.value = err.message || 'Error al guardar ingrediente'
   } finally {
     saving.value = false
+  }
+}
+
+const editarIngrediente = (ingrediente) => {
+  error.value = ''
+  successMessage.value = ''
+  editingId.value = ingrediente.id_ingrediente
+
+  form.value = {
+    nombre: ingrediente.nombre || '',
+    descripcion: ingrediente.descripcion || '',
+    fecha_ingreso: ingrediente.fecha_ingreso || '',
+    fecha_vencimiento: ingrediente.fecha_vencimiento || '',
+  }
+}
+
+const eliminarIngrediente = async (id) => {
+  error.value = ''
+  successMessage.value = ''
+
+  const confirmado = window.confirm('¿Deseas eliminar este ingrediente?')
+  if (!confirmado) return
+
+  try {
+    await ingredienteApi.delete(id)
+    successMessage.value = 'Ingrediente eliminado correctamente.'
+
+    if (editingId.value === id) {
+      resetForm()
+    }
+
+    await cargarIngredientes()
+  } catch (err) {
+    error.value = err.message || 'Error al eliminar ingrediente'
   }
 }
 
@@ -80,9 +123,9 @@ onMounted(() => {
   <div>
     <h1>Ingredientes</h1>
 
-    <h2>Nuevo ingrediente</h2>
+    <h2>{{ editingId ? 'Editar ingrediente' : 'Nuevo ingrediente' }}</h2>
 
-    <div style="margin-bottom: 16px;">
+    <form @submit.prevent="guardarIngrediente" style="margin-bottom: 16px;">
       <div style="margin-bottom: 8px;">
         <label for="nombre">Nombre</label><br />
         <input id="nombre" v-model="form.nombre" type="text" />
@@ -103,10 +146,19 @@ onMounted(() => {
         <input id="fecha_vencimiento" v-model="form.fecha_vencimiento" type="date" />
       </div>
 
-      <button @click="guardarIngrediente" :disabled="saving">
-        {{ saving ? 'Guardando...' : 'Guardar ingrediente' }}
+      <button type="submit" :disabled="saving">
+        {{ saving ? 'Guardando...' : editingId ? 'Actualizar ingrediente' : 'Guardar ingrediente' }}
       </button>
-    </div>
+
+      <button
+        v-if="editingId"
+        type="button"
+        @click="resetForm"
+        style="margin-left: 8px;"
+      >
+        Cancelar edición
+      </button>
+    </form>
 
     <p v-if="error">{{ error }}</p>
     <p v-if="successMessage">{{ successMessage }}</p>
@@ -126,6 +178,7 @@ onMounted(() => {
             <th>Descripción</th>
             <th>Fecha ingreso</th>
             <th>Fecha vencimiento</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -135,6 +188,15 @@ onMounted(() => {
             <td>{{ ingrediente.descripcion }}</td>
             <td>{{ ingrediente.fecha_ingreso }}</td>
             <td>{{ ingrediente.fecha_vencimiento }}</td>
+            <td>
+              <button @click="editarIngrediente(ingrediente)">Editar</button>
+              <button
+                @click="eliminarIngrediente(ingrediente.id_ingrediente)"
+                style="margin-left: 8px;"
+              >
+                Eliminar
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
