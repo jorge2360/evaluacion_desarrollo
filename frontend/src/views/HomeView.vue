@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <h1>Inicio</h1>
-    <p>Sistema de gestión de pasteles e ingredientes.</p>
+  <div class="card">
+    <h2>Bienvenido</h2>
+    <p>
+      Este sistema permite gestionar ingredientes, pasteles, la relacion maestro-detalle
+      entre ambos y consultar un reporte general.
+    </p>
   </div>
 </template>

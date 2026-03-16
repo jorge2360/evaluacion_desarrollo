@@ -208,12 +208,12 @@ onMounted(() => {
             <td>{{ pastel.preparado_por }}</td>
             <td>{{ pastel.fecha_creacion }}</td>
             <td>{{ pastel.fecha_vencimiento }}</td>
-            <td>
-              <button @click="verDetalle(pastel.id_pastel)">Detalle</button>
-              <button @click="editarPastel(pastel)" style="margin-left: 8px;">Editar</button>
-              <button @click="eliminarPastel(pastel.id_pastel)" style="margin-left: 8px;">
-                Eliminar
-              </button>
+            <td style="min-width: 220px;">
+            <div class="actions">
+                <button type="button" @click="verDetalle(pastel.id_pastel)">Detalle</button>
+                <button type="button" class="button-warning" @click="editarPastel(pastel)">Editar</button>
+                <button type="button" class="button-danger" @click="eliminarPastel(pastel.id_pastel)">Eliminar</button>
+            </div>
             </td>
           </tr>
         </tbody>

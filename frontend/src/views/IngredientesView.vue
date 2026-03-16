@@ -190,12 +190,7 @@ onMounted(() => {
             <td>{{ ingrediente.fecha_vencimiento }}</td>
             <td>
               <button @click="editarIngrediente(ingrediente)">Editar</button>
-              <button
-                @click="eliminarIngrediente(ingrediente.id_ingrediente)"
-                style="margin-left: 8px;"
-              >
-                Eliminar
-              </button>
+              <button type="button" class="button-danger" @click="eliminarIngrediente(ingrediente.id_ingrediente)"style="margin-left: 8px;">Eliminar</button>
             </td>
           </tr>
         </tbody>
